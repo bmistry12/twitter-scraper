@@ -1,0 +1,20 @@
+### Build ###
+*egg-info/
+build/
+dist/
+__pycache__/
+*.pyc
+functions.cpython*
+.vscode/
+
+### Generated Files ###
+*.log
+*.json
+/logs
+
+### Artefacts ###
+# data/
+config
+*.sh
+notes.txt
+
