@@ -7,14 +7,12 @@ __pycache__/
 functions.cpython*
 .vscode/
 
-### Generated Files ###
-*.log
-*.json
-/logs
-
 ### Artefacts ###
 # data/
 config
 git.sh
 notes.txt
-
+*.log
+*.json
+/logs
+*.csv

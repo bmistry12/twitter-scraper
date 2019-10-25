@@ -9,6 +9,6 @@ setup(
     author='bmistry12',
     # python_requires='3.5.0',
     py_modules=['twitter_data'],
-    install_requires=['tweepy', 'simplejson', 'hvac'],
+    install_requires=['tweepy', 'simplejson', 'hvac', 'textblob', 'pandas'],
     include_package_data=True,
 )

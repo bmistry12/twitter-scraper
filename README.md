@@ -5,6 +5,8 @@ Install python dependencies using one of the following:
 - `python setup.py install` 
 - `pip install -r requirements.txt`
 
+**You are required to have a twitter developer accout to use this**
+
 ## Setting Up Credentials - Hashicorp Vault :lock:
 Install Hashicorp Vault (if not already done so)
 </br> Various Download Links: 
