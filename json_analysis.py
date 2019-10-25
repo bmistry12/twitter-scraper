@@ -3,6 +3,9 @@ import sys
 import json
 import urllib
 import urllib.request
+import pandas as pd
+from textblob import TextBlob 
+from collections import Counter
 
 def writeToJson(fileName, dictionary):
     fileName = fileName + '.json'
@@ -11,7 +14,7 @@ def writeToJson(fileName, dictionary):
     print("Written")
 
 def filterOutTweetsWithoutLocation(fileName):
-    # We can probably make this alot nicer
+    # We can probably make this method alot nicer
     newFileName = fileName + "-filtered"
     newDict = []
 
@@ -55,34 +58,45 @@ def filterOutTweetsWithoutLocation(fileName):
     writeToJson(newFileName, newDict)
     return newFileName
 
-def ranking(tweet_info):
-    rankCount = 0
-    # step 1 - if is RT then the tweet exists elsewhere - this will increase a value called "importance"
-    text = tweet_info["Text"]
-    if text[:2] == 'RT':
-        rankCount = rankCount + 1
-    # step 2 - favourite count will increase importance
-    return rankCount
-
 def sentimentAnalysis(tweet_info):
-    # analyse if text is positive or negative ...
-    # if positive give score of 1
-    # if negative give score of 0
-    pass
+    """
+    Uses TextBlob https://planspace.org/20150607-textblob_sentiment/
+    """
+    analysis = TextBlob(tweet_info) 
+    # returns (sentiment, subjectivity)
+    return analysis.sentiment
 
+def classifier(tweets_with_sentiment):
+    duplicateFrequencies = {}
+    for i in set(tweets_with_sentiment):
+        duplicateFrequencies[i] = tweets_with_sentiment.count(i)
+    tweets = duplicateFrequencies.keys()
+
+    df = pd.DataFrame(columns=['tweet', 'sentiment', 'count'])
+    for (tweet, sentiment) in tweets:
+        count = (duplicateFrequencies.get((tweet, sentiment)))
+        df = df.append({'tweet': tweet, 'sentiment': str(sentiment), 'count': count}, ignore_index=True)
+
+    df_to_csv(df, "test.csv")
+
+def df_to_csv(df, csv_name):
+    df.to_csv(csv_name, index=True)
+    
 if __name__ == "__main__":
     file_name = str(sys.argv[1])
     print(file_name)
-    # file_name = file_name + ".json"
+    file_name = file_name + ".json"
     jsonFile = filterOutTweetsWithoutLocation(file_name)
     print (jsonFile)
 
-# all_tweets = []
+    all_tweets = []
+    tweet_json = open(file_name, 'r').read()
+    tweet = json.loads(tweet_json)
+    json_length = len(tweet)
+    index = 0
+    for index in range(0, json_length):
+        tweet_info = tweet[index]
+        tweet_text = tweet_info['Text']
+        all_tweets.append((tweet_text, sentimentAnalysis(tweet_text)))
 
-# tweet_json = open(jsonFile, 'r').read()
-# tweet = json.loads(tweet_json)
-# json_length = len(tweet)
-# index = 0
-# for index in range(0, json_length):
-#     tweet_info = tweet[index]
-#     all_tweets.append(index, ranking(tweet_info), sentimentAnalysis(tweet_info))
+    classifier(all_tweets)
