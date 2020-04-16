@@ -1,4 +1,5 @@
 # Twitter Scraper
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/bmistry12/twitter-scraper/?ref=repository-badge)
 
 ## Setup
 Install python dependencies using one of the following:
@@ -52,14 +53,14 @@ There are multiple options
 
 1) Run via shell script
 ```
-./run.sh "keywords" "output json file name"
+./run.sh "keywords" "output json file name" "output csv for data"
 ```
 
 2) Run via python scripts
     ```
     py credentials.py
     py historic_twitter.py <keywords> <output json file name>
-    py json_analysis.py <output json file name>
+    py json_analysis.py <output json file name> <output csv for data>
     ```
 
     *Eventually this will be cleaned up and one main file will run everything*

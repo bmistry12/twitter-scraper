@@ -3,6 +3,7 @@
 export LOG_PATH=./logs
 KEYWORDS=$1
 OUTPUT_FILE=$2
+OUTPUT_CSV=$3
 
 echo '=========================== Check Python Version ==========================='
 python --version
@@ -26,7 +27,7 @@ echo $JSON_FILE
 if [ -f ${JSON_FILE} ]; then
     echo "File exists"
     echo ${OUTPUT_FILE}
-    python json_analysis.py ${JSON_FILE} 2>&1 "${LOG_PATH}/json_analysis.log"
+    python json_analysis.py ${JSON_FILE} ${OUTPUT_CSV} 2>&1 "${LOG_PATH}/json_analysis.log"
 fi
 
 set -e
