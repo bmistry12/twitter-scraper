@@ -1,11 +1,8 @@
-import re
 import sys
 import json
-import urllib
 import urllib.request
 import pandas as pd
 from textblob import TextBlob 
-from collections import Counter
 
 def writeToJson(fileName, dictionary):
     fileName = fileName + '.json'
