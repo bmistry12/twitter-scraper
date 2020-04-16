@@ -29,21 +29,21 @@ else :
     print("ERROR - client not authenticated")
 
 def getConsumerKey():
-    if consumer_key is '':
+    if consumer_key == '':
         print("Empty consumer key field")
     return consumer_key
 
 def getConsumerSecret():
-    if consumer_secret is '':
+    if consumer_secret == '':
         print("Empty consumer secret field")
     return consumer_secret
 
 def getAccessToken():
-    if access_token is '':
+    if access_token == '':
         print("Empty access token field")
     return access_token
     
 def getAccessTokenSecret():
-    if access_token_secret is '':
+    if access_token_secret == '':
         print("Empty access token secret field")
     return access_token_secret
