@@ -1,103 +1,76 @@
 import sys
 import json
-import urllib.request
 import pandas as pd
-from textblob import TextBlob 
+import utils
+from textblob import TextBlob
 
-def writeToJson(fileName, dictionary):
-    fileName = fileName + '.json'
-    with open(fileName, 'w') as file:
-        json.dump(dictionary, file)
-    print("Written")
 
-def filterOutTweetsWithoutLocation(fileName):
-    # We can probably make this method alot nicer
-    newFileName = fileName + "-filtered"
-    newDict = []
+def _classifier(tweets_with_sentiment, locations, output_csv):
+    """Classify each tweet with a sentiment."""
+    duplicate_freq = {}
+    for item in set(tweets_with_sentiment):
+        duplicate_freq[item] = tweets_with_sentiment.count(item)
+    tweets = duplicate_freq.keys()
+    df = pd.DataFrame(columns=['tweet', 'sentiment', 'count'])
+    for index, (tweet, sentiment) in enumerate(tweets):
+        count = (duplicate_freq.get((tweet, sentiment)))
+        loc = locations[index]
+        df = df.append({'tweet': tweet, 'sentiment': str(
+            sentiment), 'count': count, 'location': loc}, ignore_index=True)
+    utils.df_to_csv(df, output_csv)
 
-    tweet_json = open(fileName, 'r').read()
+
+def _filter_known_locations(file_name):
+    """Get tweets with a known location."""
+    filtered_file_name = file_name + "-filtered"
+    known_locations = tweets_with_known_location = []
+    with open(file_name, 'r') as tweet_file:
+        tweet_json = tweet_file.read()
     tweet = json.loads(tweet_json)
-    json_length = len(tweet)
-    index = 0
-    # find a way to make this way nicer - list comprehensions?
-    for index in range(0, json_length):
+    with open("./data/cities", 'rb') as city_file:
+        known_locations += city_file.readlines()
+    with open('./data/us_state_codes', 'rb') as us_file:
+        known_locations += us_file.readlines()
+    with open('./data/countries', 'rb') as country_file:
+        known_locations += country_file.readlines()
+    for index in enumerate(tweet):
         loc = tweet[index]["User-Location"]
-        isCity = False
-        isUS = False
-        if loc == "":
+        if loc == "" or loc is None:
             print("Empty location")
-        else:
-            with open("./data/cities", 'rb') as f:
-                for line in f:
-                    if line.decode('utf-8').strip() in loc:
-                        print("Contains city: " + line.decode('utf-8').strip() + " in " + loc)
-                        isCity = True
-                        newDict.append(tweet[index])
-                        break
-            if not isCity:
-                with open('./data/us_state_codes') as f1:
-                    for line in f1:
-                        if line.strip() in loc:
-                            print("US state: contains " + line.strip())
-                            isUS = True
-                            newDict.append(tweet[index])
-                            break
-            if (not isUS and not isCity) :
-                with open('./data/countries') as f2:
-                    for line in f2:
-                        if line.strip() in loc:
-                            print("Country: contains " + line.strip())
-                            newDict.append(tweet[index])
-                            break
-            
+            continue
+        for line in known_locations:
+            if line.decode('utf-8').strip() in loc:
+                print(line.decode('utf-8').strip() + " in " + loc)
+                tweets_with_known_location.append(tweet[index])
+                break
         print("---")
-    writeToJson(newFileName, newDict)
-    return newFileName
+    utils.write_to_json(filtered_file_name, tweets_with_known_location)
+    return filtered_file_name
 
-def sentimentAnalysis(tweet_text):
+
+def _sentiment_analyis(tweet_text):
+    """Perform sentiment analysis with TextBlob.
+    https://planspace.org/20150607-textblob_sentiment/.
     """
-    Uses TextBlob https://planspace.org/20150607-textblob_sentiment/
-    """
-    analysis = TextBlob(tweet_text) 
+    analysis = TextBlob(tweet_text)
     # returns (sentiment, subjectivity)
     return analysis.sentiment
 
-def classifier(tweets_with_sentiment, locations, output_csv):
-    duplicateFrequencies = {}
-    for i in set(tweets_with_sentiment):
-        duplicateFrequencies[i] = tweets_with_sentiment.count(i)
-    tweets = duplicateFrequencies.keys()
 
-    df = pd.DataFrame(columns=['tweet', 'sentiment', 'count'])
-    for index, (tweet, sentiment) in enumerate(tweets):
-        count = (duplicateFrequencies.get((tweet, sentiment)))
-        loc = locations[index]
-        df = df.append({'tweet': tweet, 'sentiment': str(sentiment), 'count': count, 'location': loc}, ignore_index=True)
-
-    df_to_csv(df, output_csv)
-
-def df_to_csv(df, csv_name):
-    df.to_csv(csv_name, index=True)
-    
 if __name__ == "__main__":
-    file_name = str(sys.argv[1])
+    file_name = str(sys.argv[1]) + ".json"
     output_csv = str(sys.argv[2])
-    print(file_name)
-    file_name = file_name + ".json"
-    jsonFile = filterOutTweetsWithoutLocation(file_name)
-    print (jsonFile)
+    json_file = _filter_known_locations(file_name)
+    all_tweets = all_loc = []
 
-    all_tweets = []
-    all_loc = []
-    tweet_json = open(file_name, 'r').read()
-    tweets = json.loads(tweet_json)
-    json_length = len(tweets)
-    index = 0
-    for index in range(0, json_length):
-        tweet_info = tweets[index]
+    with open(file_name) as tweet_file:
+        tweet_json = tweet_file.read()
+    json_tweets = json.loads(tweet_json)
+    for index in enumerate(json_tweets):
+        tweet_info = json_tweets[index]
         tweet_text = tweet_info['Text']
         tweet_loc = tweet_info["User-Location"]
-        all_tweets.append((tweet_text, sentimentAnalysis(tweet_text)))
+        all_tweets.append((tweet_text, _sentiment_analyis(tweet_text)))
         all_loc.append(tweet_loc)
 
-    classifier(all_tweets, all_loc, output_csv)
+    _classifier(all_tweets, all_loc, output_csv)
