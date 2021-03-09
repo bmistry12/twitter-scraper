@@ -1,33 +1,40 @@
 #!/bin/bash
-# export LOG_PATH=~/opt/twitter/log
-export LOG_PATH=./logs
-KEYWORDS=$1
-OUTPUT_FILE=$2
-OUTPUT_CSV=$3
+set -eu
 
-echo '=========================== Check Python Version ==========================='
-python --version
+KEYWORDS=$1
+NUM_OF_TWEETS=${2-1000}
+OUTPUT_FILE=${3-tweets}
+OUTPUT_CSV=${4-analysis}
+
+echo '=========================== Check OS & Python Version ==========================='
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     OS="Linux" PYTHON_CMD="python3" LOG_PATH="/tmp/twitter-scraper/logs";;
+    Darwin*)    OS="Mac" PYTHON_CMD="python" LOG_PATH="./logs";;
+    CYGWIN*)    OS="Windows" PYTHON_CMD="python" LOG_PATH="./logs";;
+    MINGW*)     OS="Windows" PYTHON_CMD="py" LOG_PATH="./logs";;
+    *)          OS"UNKNOWN:${unameOut}" PYTHON_CMD="python" LOG_PATH="./logs";;
+esac
+
+export LOG_PATH
+
+${PYTHON_CMD} --version
 pip --version
 
+echo '=========================== Intall Requirements ==========================='
+pip install -r requirements.txt
+
 echo '=========================== Make Log Files ==========================='
-mkdir ${LOG_PATH}
-touch "$LOG_PATH/hist_twitter_data.log"
-touch "${LOG_PATH}/json_analysis.log"
-touch "${LOG_PATH}/credentials.log"
+mkdir -p ${LOG_PATH}
+touch "$LOG_PATH/hist_twitter_data.log" "${LOG_PATH}/json_analysis.log" "${LOG_PATH}/credentials.log"
 
 echo '=========================== Run Credentials.Py ==========================='
-python credentials.py 2>&1 | tee "${LOG_PATH}/credentials.log"
+${PYTHON_CMD} credentials.py 2>&1 | tee "${LOG_PATH}/credentials.log"
 
 echo '=========================== Run Historic Data Analysis ==========================='
-python historic_twitter_data.py "${KEYWORDS}" "${OUTPUT_FILE}" 2>&1 | tee "$LOG_PATH/hist_twitter_data.log"
-echo ${KEYWORDS}
-echo ${OUTPUT_FILE}
+${PYTHON_CMD} historic_twitter_data.py "${KEYWORDS}" "${NUM_OF_TWEETS}" "${OUTPUT_FILE}" 2>&1 | tee "$LOG_PATH/hist_twitter_data.log"
 JSON_FILE="${OUTPUT_FILE}.json"
-echo $JSON_FILE
 if [ -f ${JSON_FILE} ]; then
-    echo "File exists"
-    echo ${OUTPUT_FILE}
-    python json_analysis.py ${JSON_FILE} ${OUTPUT_CSV} 2>&1 "${LOG_PATH}/json_analysis.log"
+    echo "Output File ${JSON_FILE} Exists"
+    ${PYTHON_CMD} json_analysis.py ${JSON_FILE} ${OUTPUT_CSV} "${LOG_PATH}/json_analysis.log" 2>&1
 fi
-
-set -e

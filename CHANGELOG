@@ -1,2 +1,3 @@
 v0.1 - historic_twitter_data works for the keyword "global warming". json_analysis will filter out places without real/known locations. credentials will read in credentials for the system from self hosted Hashicorp Vault. Base code for a few files.
 v0.2 - added basic sentiment analysis using textblob - outputs sentiment polarity, subjectivity and tweet count to a csv file
+v0.2.1 - code cleanup, linting, formatting, enhancements, and multi-os compatibility

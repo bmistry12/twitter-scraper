@@ -1,12 +1,10 @@
 # Twitter Scraper
+
 [![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/bmistry12/twitter-scraper/?ref=repository-badge)
 
-## Setup
-Install python dependencies using one of the following:
-- `python setup.py install` 
-- `pip install -r requirements.txt`
 
-**You are required to have a twitter developer accout to use this**
+## Setup
+Apply for a Twitter development account [here](https://developer.twitter.com/en/apply-for-access). Naturally you'll also need a twitter account.
 
 ## Setting Up Credentials - Hashicorp Vault :lock:
 Install Hashicorp Vault (if not already done so)
@@ -37,30 +35,35 @@ Check vault can be connected to & is running correctly
 vault status
 ```
 
-### Put Secrets Into Vault
+Put Secrets Into Vault
 ```
-vault kv put secret/twittertest consumer_key=xxx consumer_secret=xxxx access_token=xxx access_token_secret=xxx
+vault kv put secret/twitter consumer_key=xxx consumer_secret=xxxx access_token=xxx access_token_secret=xxx
 ```
 
-### Get Secrets From Vault
+Get Secrets From Vault (sanity check)
 ```
-vault kv get secret/twittertest
-vault kv get -field=consumer_key secret/twittertest
+vault kv get secret/twitter
+vault kv get -field=consumer_key secret/twitter
 ```
+
+### Being Uncool and Not Using Vault
+This of course still runs without Vault.<br>
+Comment out any references to `credentials.py` (e.g. in run.sh and as `import credentials`), and set the variables in `historic_twitter_data.__main__` manually.
 
 ## Run :running:
-There are multiple options
 
-1) Run via shell script
 ```
-./run.sh "keywords" "output json file name" "output csv for data"
+./run.sh "<keywords>" <number_of_tweets_to_fetch> <output_json_filename> <output_csv_for_data>
+```
+The only required argument is keywords, which can be a string of different words seperated by commas.
+
+Or, if for some reason you don't like the existence of shell scripts:
+```
+pip install -r requirements.txt
+py credentials.py
+py historic_twitter.py <keywords> <output json file name>
+py json_analysis.py <output json file name> <output csv for data>
 ```
 
-2) Run via python scripts
-    ```
-    py credentials.py
-    py historic_twitter.py <keywords> <output json file name>
-    py json_analysis.py <output json file name> <output csv for data>
-    ```
-
-    *Eventually this will be cleaned up and one main file will run everything*
+### This Code Sucks :nauseated_face:
+See any issues or terrible code? Feel free to create an issue or PR to fix them.

@@ -8,10 +8,7 @@ functions.cpython*
 .vscode/
 
 ### Artefacts ###
-# data/
 config
-git.sh
-notes.txt
 *.log
 *.json
 /logs
