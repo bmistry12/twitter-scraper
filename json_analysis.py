@@ -1,7 +1,7 @@
 import sys
 import json
-import pandas as pd
 import utils
+import pandas as pd
 from textblob import TextBlob
 
 

@@ -1,7 +1,7 @@
 import sys  # noqa: E902
+import utils
 import tweepy
 from credentials import Credentials, VaultError
-import utils
 from tweepy import API, OAuthHandler, TweepError
 
 

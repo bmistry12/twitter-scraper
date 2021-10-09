@@ -28,6 +28,9 @@ echo '=========================== Make Log Files ==========================='
 mkdir -p ${LOG_PATH}
 touch "$LOG_PATH/hist_twitter_data.log" "${LOG_PATH}/json_analysis.log" "${LOG_PATH}/credentials.log"
 
+echo '=========================== Run Credentials.Py ==========================='
+${PYTHON_CMD} credentials.py 2>&1 | tee "${LOG_PATH}/credentials.log"
+
 echo '=========================== Run Historic Data Analysis ==========================='
 ${PYTHON_CMD} historic_twitter_data.py "${KEYWORDS}" "${NUM_OF_TWEETS}" "${OUTPUT_FILE}" 2>&1 | tee "$LOG_PATH/hist_twitter_data.log"
 JSON_FILE="${OUTPUT_FILE}.json"

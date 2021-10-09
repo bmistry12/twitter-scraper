@@ -63,7 +63,7 @@ class Credentials():
             raise VaultError(
                 "Credentials aren't set - did you export them from the server?"
             )
-        # Check connected to vault
+        # Check if connected to vault
         if client.is_authenticated():
             read_response = client.secrets.kv.read_secret_version(path="twitter")
             self.consumer_key = ("{val}".format(
