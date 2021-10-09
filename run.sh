@@ -36,5 +36,5 @@ ${PYTHON_CMD} historic_twitter_data.py "${KEYWORDS}" "${NUM_OF_TWEETS}" "${OUTPU
 JSON_FILE="${OUTPUT_FILE}.json"
 if [ -f ${JSON_FILE} ]; then
     echo "Output File ${JSON_FILE} Exists"
-    ${PYTHON_CMD} json_analysis.py ${JSON_FILE} ${OUTPUT_CSV} "${LOG_PATH}/json_analysis.log" 2>&1
+    ${PYTHON_CMD} json_analysis.py ${JSON_FILE} "${OUTPUT_CSV}.csv" "${LOG_PATH}/json_analysis.log"
 fi

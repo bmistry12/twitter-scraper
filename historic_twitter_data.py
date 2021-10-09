@@ -1,11 +1,11 @@
 import sys  # noqa: E902
-import tweepy
-import credentials
 import utils
+import tweepy
+from credentials import Credentials, VaultError
 from tweepy import API, OAuthHandler, TweepError
 
 
-class HistoricTweetException(Exception):
+class HistoricTweetError(Exception):
     """Historic Twitter Data Exception."""
     pass
 
@@ -13,7 +13,7 @@ class HistoricTweetException(Exception):
 def _get_historic_tweets(api, keyword, json_file_name, num_of_tweets):
     """Get previous arg.num_of_tweets related to arg.keyword."""
     tweet_list = []
-    print("Getting previous %s tweets..." % str(num_of_tweets))
+    print(f"Getting previous {str(num_of_tweets)} tweets...")
     try:
         for tweet in tweepy.Cursor(api.search, q=keyword).items(num_of_tweets):
             entry = {'Screen-Name': str(tweet.user.screen_name),
@@ -35,7 +35,7 @@ def _get_historic_tweets(api, keyword, json_file_name, num_of_tweets):
         print("...tweets fetched")
         utils.write_to_json(json_file_name, tweet_list)
     except tweepy.TweepError as e:
-        raise HistoricTweetException(str(e))
+        raise HistoricTweetError(str(e))
 
 
 if __name__ == "__main__":
@@ -43,13 +43,14 @@ if __name__ == "__main__":
     arg_num_of_tweets = int(sys.argv[2])
     arg_json_file_name = sys.argv[3]
     # Get credentials
+    vault_creds = Credentials()
     try:
-        consumer_key = credentials.get_consumer_key()
-        consumer_secret = credentials.get_consumer_secret()
-        access_token = credentials.get_access_token()
-        access_token_secret = credentials.get_access_secret()
-    except credentials.VaultException as error:
-        raise HistoricTweetException("Vault Exception: " + str(error))
+        consumer_key = vault_creds.get_consumer_key()
+        consumer_secret = vault_creds.get_consumer_secret()
+        access_token = vault_creds.get_access_token()
+        access_token_secret = vault_creds.get_access_secret()
+    except VaultError as error:
+        raise HistoricTweetError("Vault Exception: " + str(error))
     # Set Up Auth
     try:
         auth = OAuthHandler(consumer_key, consumer_secret)
