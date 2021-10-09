@@ -37,7 +37,7 @@ vault status
 
 Put Secrets Into Vault
 ```
-vault kv put secret/twitter consumer_key=xxx consumer_secret=xxxx access_token=xxx access_token_secret=xxx
+vault kv put secret/twitter consumer_key=<xxx> consumer_secret=<xxx> access_token=<xxx> access_token_secret=<xxx>
 ```
 
 Get Secrets From Vault (sanity check)
@@ -67,3 +67,6 @@ py json_analysis.py <output json file name> <output csv for data>
 
 ### This Code Sucks :nauseated_face:
 See any issues or terrible code? Feel free to create an issue or PR to fix them.
+
+To keep code consistent Flake8 should be used for linting checks.
+`flake8 --max-line-length 100`
