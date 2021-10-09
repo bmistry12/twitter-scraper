@@ -4,7 +4,6 @@ import hvac
 
 class VaultError(Exception):
     """Vault Exception."""
-    pass
 
 
 class Credentials():

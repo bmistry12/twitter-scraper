@@ -7,7 +7,6 @@ from tweepy import API, OAuthHandler, TweepError
 
 class HistoricTweetError(Exception):
     """Historic Twitter Data Exception."""
-    pass
 
 
 def _get_historic_tweets(api, keyword, json_file_name, num_of_tweets):
