@@ -21,7 +21,7 @@ export LOG_PATH
 ${PYTHON_CMD} --version
 pip --version
 
-echo '=========================== Intall Requirements ==========================='
+echo '=========================== Install Requirements ==========================='
 pip install -r requirements.txt
 
 echo '=========================== Make Log Files ==========================='
@@ -38,3 +38,12 @@ if [ -f ${JSON_FILE} ]; then
     echo "Output File ${JSON_FILE} Exists"
     ${PYTHON_CMD} json_analysis.py ${JSON_FILE} "${OUTPUT_CSV}.csv" "${LOG_PATH}/json_analysis.log"
 fi
+
+echo '=========================== Map It Out ==========================='
+if [ -f "${OUTPUT_CSV}.csv" ]; then
+    echo "Running Mapper..."
+    echo "This might take a while...go make yourself a tea..."
+    ${PYTHON_CMD} mapper.py "${OUTPUT_CSV}.csv"
+fi
+
+echo "My job here is done."
