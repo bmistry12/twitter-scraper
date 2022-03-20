@@ -71,9 +71,9 @@ if __name__ == "__main__":
     json_tweets = json.loads(tweet_json)
     for index, _ in enumerate(json_tweets):
         tweet_info = json_tweets[index]
-        tweet_text = tweet_info['Text']
+        TWEET_TEXT = tweet_info['Text']
         tweet_loc = tweet_info["User-Location"]
-        all_tweets.append((tweet_text, _sentiment_analyis(tweet_text)))
+        all_tweets.append((TWEET_TEXT, _sentiment_analyis(TWEET_TEXT)))
         all_loc.append(tweet_loc)
 
     _classifier(all_tweets, all_loc, output_csv)
