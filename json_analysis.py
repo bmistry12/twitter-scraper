@@ -5,7 +5,7 @@ import pandas as pd
 from textblob import TextBlob
 
 
-def _classifier(tweets_with_sentiment, locations, output_csv):
+def _classifier(tweets_with_sentiment, locations, stats, output_csv):
     """Classify each tweet with a sentiment."""
     print("Classifying...")
     duplicate_freq = {}
@@ -17,20 +17,22 @@ def _classifier(tweets_with_sentiment, locations, output_csv):
         if not isinstance(item, tuple):
             continue
         tweet, sentiment = item
-        count = (duplicate_freq.get((tweet, sentiment)))
+        count = int(duplicate_freq.get((tweet, sentiment))) + int(stats[index])
         loc = locations[index]
         df = df.append({'tweet': tweet, 'sentiment': str(
             sentiment), 'count': count, 'location': loc}, ignore_index=True)
     utils.df_to_csv(df, output_csv)
 
 
-def _filter_known_locations(file_name):
+def _filter_known_locations(data_file_name):
     """Get tweets with a known location."""
     print("Getting tweets with known location...")
-    filtered_file_name = file_name + "-filtered"
+    filtered_file_name = data_file_name + "-filtered"
+    if "../" in filtered_file_name or filtered_file_name[0] == "/":
+        raise RuntimeError()
     known_locations = []
     tweets_with_known_location = []
-    with open(file_name, 'r', encoding="utf-8") as tweet_file:
+    with open(data_file_name, 'r', encoding="utf-8") as tweet_file:
         tweet_json = tweet_file.read()
     tweet = json.loads(tweet_json)
     with open("./data/cities", 'r', encoding="utf-8") as city_file:
@@ -41,7 +43,7 @@ def _filter_known_locations(file_name):
         known_locations += country_file.read().splitlines()
     for index, _ in enumerate(tweet):
         loc = tweet[index]["User-Location"]
-        if loc == "" or loc is None:
+        if loc in ["", None]:
             continue
         for line in known_locations:
             if line.strip() in loc:
@@ -63,17 +65,21 @@ def _sentiment_analyis(tweet_text):
 if __name__ == "__main__":
     file_name = str(sys.argv[1])
     output_csv = str(sys.argv[2])
-    json_file = _filter_known_locations(file_name)
+    if "../" in file_name or file_name[0] == "/":
+        raise RuntimeError()
+    json_file = _filter_known_locations(file_name) + ".json"
     all_tweets = []
     all_loc = []
-    with open(file_name) as tweet_file:
+    all_stats = []
+    with open(json_file) as tweet_file:
         tweet_json = tweet_file.read()
     json_tweets = json.loads(tweet_json)
     for index, _ in enumerate(json_tweets):
         tweet_info = json_tweets[index]
         tweet_text = tweet_info['Text']
         tweet_loc = tweet_info["User-Location"]
+        tweet_stats = str(int(tweet_info["Retweet-Count"]) + int(tweet_info["Favorite-Count"]))
         all_tweets.append((tweet_text, _sentiment_analyis(tweet_text)))
         all_loc.append(tweet_loc)
-
-    _classifier(all_tweets, all_loc, output_csv)
+        all_stats.append(tweet_stats)
+    _classifier(all_tweets, all_loc, all_stats, output_csv)

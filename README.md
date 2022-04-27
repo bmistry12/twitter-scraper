@@ -63,6 +63,7 @@ pip install -r requirements.txt
 py credentials.py
 py historic_twitter.py <keywords> <output json file name>
 py json_analysis.py <output json file name> <output csv for data>
+py mapper.py <output csv name>
 ```
 
 ### This Code Sucks :nauseated_face:

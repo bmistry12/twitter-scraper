@@ -2,3 +2,4 @@ v0.1 - historic_twitter_data works for the keyword "global warming". json_analys
 v0.2 - added basic sentiment analysis using textblob - outputs sentiment polarity, subjectivity and tweet count to a csv file
 v0.2.1 - code cleanup, linting, formatting, enhancements, and multi-os compatibility
 v0.2.2 - get twitter-scraper working again
+v0.3 - add heat map feature
