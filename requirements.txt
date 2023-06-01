@@ -2,7 +2,7 @@ autopep8==2.0.2
 flake8==4.0.1
 folium==0.12.1.post1
 geopy==2.3.0
-hvac==0.11.2
+hvac==1.1.0
 nltk==3.7
 numpy==1.24.1
 pandas==1.5.2
